@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+</head>
+<body>
+    <div id="app">
+        <section v-for='action in actions' style="margin-bottom: 50px;">
+            <h1>{{ action.method }}</h1>
+            <hr>
+            <button @click="invokeHandler(action.handler)" >Execute {{ action.method }}</button>
+            <div style="padding: 20px 0;">
+                <code>
+                    {{ action.result || 'No result now!' }}
+                </code>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                actions: [
+                    {
+                        method: 'GET',
+                        handler: 'getHandler',
+                        result: null
+                    },
+                    {
+                        method: 'POST',
+                        handler: 'postHandler',
+                        result: null
+                    },
+                    {
+                        method: 'PUT',
+                        handler: 'putHandler',
+                        result: null
+                    },
+                    {
+                        method: 'DELETE',
+                        handler: 'deleteHandler',
+                        result: null
+                    }
+                ],
+            },
+            update(){
+                title:"abc"
+            },
+            created(){
+                //this.fetchData();
+            },
+            methods: {
+                invokeHandler(handlerName){
+                    this[handlerName]();
+                },
+                getHandler(){
+                    console.log('getHandler is running');
+                    // GET /someUrl
+                    this.$http.get('http://localhost:3000/posts').then(response => {
+                    // get body data
+                    this.actions[0].result = response.body;
+                    }, response => {
+                    // error callback
+                    console.log('error: ', response);
+                    });
+                },
+                postHandler(){
+                    console.log('postHandler is running');
+                    this.$http.post('http://localhost:3000/posts').then(response => {
+                    this.actions[1].result = response.body;
+                    }, response => {
+                    // error callback
+                    console.log('error: ', response);
+                    });
+                },
+                putHandler(){
+                    console.log('putHandler is running');
+                    this.$http.put('http://localhost:3000/posts/3',{
+                        title: "abc"
+                    })
+                    .then(response => {
+                    this.actions[2].result = response.body;
+                    }, response => {
+                    // error callback
+                    console.log('error: ', response);
+                    });
+                },
+
+                deleteHandler(){
+                    console.log('deleteHandler is running');
+                    this.$http.delete('http://localhost:3000/posts/10').then(response => {
+                    this.actions[3].result = response.body;
+                    }, response => {
+                    // error callback
+                    console.log('error: ', response);
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
